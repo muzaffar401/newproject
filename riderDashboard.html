@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Rider Dashboard</title>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center my-5 text-primary">Rider Dashboard</h1>
+        <h2 id="rider-name" class="text-center text-success"></h2>
+        <div id="food-donation-assignments" class="col-lg-8 offset-lg-2"></div>
+        <a href="riderLoginForm.html" class="btn btn-danger">Back to Login</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let currentRider = JSON.parse(localStorage.getItem('currentRider'));
+
+            if (currentRider) {
+                const firstName = currentRider.riderName || 'First Name';
+                document.getElementById('rider-name').textContent = `Welcome, ${firstName}`;
+            } else {
+                window.location.href = 'riderLoginForm.html';
+                return;
+            }
+
+            // Check if the process is already in progress
+            if (currentRider.inProgress) {
+                document.getElementById('food-donation-assignments').style.display = 'none';
+                return;
+            }
+
+            if (!currentRider.DonateFood) {
+                document.getElementById('food-donation-assignments').innerHTML = '<p>No food donations assigned yet.</p>';
+                return;
+            }
+
+            const foodDonationAssignments = document.getElementById('food-donation-assignments');
+
+            const donationCard = document.createElement('div');
+            donationCard.classList.add('card', 'mb-3');
+            donationCard.innerHTML = `
+                <div class="card-body">
+                    <h5 class="card-title">Food Donation Assignment</h5>
+                    <p class="card-text"><strong>Name:</strong> ${currentRider.DonateFood.firstName} ${currentRider.DonateFood.lastName}</p>
+                    <p class="card-text"><strong>Email:</strong> ${currentRider.DonateFood.email}</p>
+                    <p class="card-text"><strong>Phone:</strong> ${currentRider.DonateFood.phone}</p>
+                    <p class="card-text"><strong>Message:</strong> ${currentRider.DonateFood.message}</p>
+                    <p class="card-text"><strong>Organization:</strong> ${currentRider.DonateFood.organization}</p>
+                    <p class="card-text"><strong>Newsletter:</strong> ${currentRider.DonateFood.newsletter ? 'Yes' : 'No'}</p>
+                    <button class="btn btn-success btn-sm done-btn" onclick="startProcess()">Start Process</button>
+                </div>
+            `;
+            foodDonationAssignments.appendChild(donationCard);
+        });
+
+        function startProcess() {
+            let currentRider = JSON.parse(localStorage.getItem('currentRider'));
+            currentRider.inProgress = true;
+            localStorage.setItem('currentRider', JSON.stringify(currentRider));
+
+            // Hide the food donation record
+            document.getElementById('food-donation-assignments').style.display = 'none';
+
+            // Inform the admin (this can be done by storing in localStorage, or through other means depending on your setup)
+            localStorage.setItem('riderInProgress', JSON.stringify(currentRider));
+
+            alert('Process started. The admin can now track your delivery.');
+        }
+    </script>
+</body>
+
+</html>

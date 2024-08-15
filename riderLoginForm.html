@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rider Login</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Rider Login</h1>
+
+        <p>Email</p>
+        <input type="email" id="email">
+        <span id="validationEmail"></span>
+
+        <p>Password</p>
+        <input type="password" id="password">
+        <span id="validationPassword"></span><br>
+
+        <button onclick="loginRider()">Login</button>
+
+        <p id="registerLink"></p>
+    </div>
+
+    <script>
+        window.onload = function () {
+            let justRegistered = localStorage.getItem("justRegistered");
+            if (!justRegistered) {
+                document.getElementById("registerLink").innerHTML = '<a href="riderRegisterForm.html">Don\'t have an account? Register</a>';
+            } else {
+                localStorage.removeItem("justRegistered");
+            }
+
+            document.getElementById("email").addEventListener("keyup", validateEmailOnLogin);
+            document.getElementById("password").addEventListener("keyup", validatePasswordOnLogin);
+        };
+
+        function validateEmailOnLogin() {
+            let email = document.querySelector("#email").value;
+            let riders = JSON.parse(localStorage.getItem("riders")) || [];
+
+            let existingRider = riders.find(rider => rider.email === email);
+
+            if (email === "") {
+                document.getElementById("validationEmail").innerHTML = "Please fill out this field";
+                document.getElementById("validationEmail").style.color = "red";
+            } else if (!existingRider) {
+                document.getElementById("validationEmail").innerHTML = "Email not found. Please register.";
+                document.getElementById("validationEmail").style.color = "red";
+            } else {
+                document.getElementById("validationEmail").innerHTML = "";
+            }
+        }
+
+        function validatePasswordOnLogin() {
+            let email = document.querySelector("#email").value;
+            let password = document.querySelector("#password").value;
+            let riders = JSON.parse(localStorage.getItem("riders")) || [];
+
+            let existingRider = riders.find(rider => rider.email === email);
+
+            if (password === "") {
+                document.getElementById("validationPassword").innerHTML = "Please fill out this field";
+                document.getElementById("validationPassword").style.color = "red";
+            } else if (existingRider && existingRider.password !== password) {
+                document.getElementById("validationPassword").innerHTML = "Incorrect password.";
+                document.getElementById("validationPassword").style.color = "red";
+            } else {
+                document.getElementById("validationPassword").innerHTML = "";
+            }
+        }
+
+        function validateAll() {
+            validateEmailOnLogin();
+            validatePasswordOnLogin();
+        }
+
+        function loginRider() {
+            validateAll();
+
+            if (document.getElementById("validationEmail").innerHTML === "" &&
+                document.getElementById("validationPassword").innerHTML === "") {
+
+                if (localStorage.getItem("activeUserType") === "user") {
+                    alert("A user is currently logged in. Please log out to log in as a rider.");
+                    document.querySelector("#email").value = "";
+                    document.querySelector("#password").value = "";
+                    return;
+                }
+
+                localStorage.setItem("activeUserType", "rider");
+
+                let email = document.querySelector("#email").value;
+                let password = document.querySelector("#password").value;
+
+                let riders = JSON.parse(localStorage.getItem("riders")) || [];
+
+                let existingRider = riders.find(rider => rider.email === email && rider.password === password);
+
+                if (existingRider) {
+                    // Store the logged-in rider's data in localStorage
+                    localStorage.setItem("currentRider", JSON.stringify(existingRider));
+                    location.assign("riderDashboard.html");
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

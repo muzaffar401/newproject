@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Rider Dashboard</title>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center my-5 text-primary">Rider Dashboard</h1>
+        <!-- Placeholder for rider's name -->
+        <h2 id="rider-name" class="text-center text-success"></h2>
+        <div id="food-donation-assignments" class="col-lg-8 offset-lg-2"></div>
+        <a href="riderLoginForm.html" class="btn btn-danger">Back to Login</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Retrieve the logged-in rider's data from sessionStorage
+            let currentRider = JSON.parse(sessionStorage.getItem('currentRider'));
+
+            if (currentRider) {
+                // Retrieve the first name and last name, or provide a fallback
+                const firstName = currentRider.riderName || 'First Name';
+
+                // Display the rider's name
+                document.getElementById('rider-name').textContent = Welcome, ${firstName};
+            } else {
+                // If no rider is logged in, redirect to the login page
+                window.location.href = 'riderLoginForm.html';
+            }
+
+            if (!currentRider || !currentRider.DonateFood) {
+                document.getElementById('food-donation-assignments').innerHTML = '<p>No food donations assigned yet.</p>';
+                return;
+            }
+
+            const foodDonationAssignments = document.getElementById('food-donation-assignments');
+
+            const donationCard = document.createElement('div');
+            donationCard.classList.add('card', 'mb-3');
+            donationCard.innerHTML = 
+                <div class="card-body">
+                    <h5 class="card-title">Food Donation Assignment</h5>
+                    <p class="card-text"><strong>Name:</strong> ${currentRider.DonateFood.firstName} ${currentRider.DonateFood.lastName}</p>
+                    <p class="card-text"><strong>Email:</strong> ${currentRider.DonateFood.email}</p>
+                    <p class="card-text"><strong>Phone:</strong> ${currentRider.DonateFood.phone}</p>
+                    <p class="card-text"><strong>Message:</strong> ${currentRider.DonateFood.message}</p>
+                    <p class="card-text"><strong>Organization:</strong> ${currentRider.DonateFood.organization}</p>
+                    <p class="card-text"><strong>Newsletter:</strong> ${currentRider.DonateFood.newsletter ? 'Yes' : 'No'}</p>
+                    <button class="btn btn-success btn-sm done-btn" onclick="startProcess()">Start Process</button>
+                </div>
+            ;
+            foodDonationAssignments.appendChild(donationCard);
+        });
+
+        function startProcess() {
+            // Store rider's current status as "In Progress" in sessionStorage
+            let currentRider = JSON.parse(sessionStorage.getItem('currentRider'));
+            currentRider.inProgress = true;
+            sessionStorage.setItem('currentRider', JSON.stringify(currentRider));
+
+            // Navigate to the rider tracking page
+            window.location.href = 'ridersTracking.html';
+        }
+    </script>
+</body>
+
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bike Rider Animation</title>
+</head>
+
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+    }
+
+    .map-container {
+        position: relative;
+        width: 90%;
+        height: 400px;
+        background-color: #c2e59c;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        background-image: url(pngwing.com.png);
+        background-size: cover;
+    }
+
+    .start-point,
+    .end-point {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        text-align: center;
+        color: #fff;
+    }
+
+    .start-point {
+        top: 43px;
+        left: 35px;
+        background-image: url(—Pngtree—small\ restaurant\ building\ vector\ with_5484646.png);
+    }
+
+    .end-point {
+        top: 98px;
+        right: 17px;
+        background-image: url(enterprise.png);
+    }
+
+    #bike-rider {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        background-image: url(—Pngtree—cartoon\ delivery\ man_876933.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+        animation: ride 30s linear forwards;
+        top: -80px;
+    }
+
+    /* Road path instead of a line */
+    #road-path {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    .road {
+        stroke: transparent;
+        stroke-width: 3;
+        fill: none;
+    }
+
+    .road-image {
+        position: absolute;
+    }
+
+    /* Keyframes for moving the bike rider along the path */
+    @keyframes ride {
+        0% {
+            transform: translate(100px, 120px) rotate(0deg);
+        }
+
+        10% {
+            transform: translate(170px, 120px) rotate(15deg);
+        }
+
+        20% {
+            transform: translate(280px, 220px) rotate(40deg);
+        }
+
+        30% {
+            transform: translate(370px, 160px) rotate(-20deg);
+        }
+
+        40% {
+            transform: translate(460px, 200px) rotate(20deg);
+        }
+
+        50% {
+            transform: translate(550px, 195px) rotate(10deg);
+        }
+
+        60% {
+            transform: translate(640px, 120px) rotate(-25deg);
+        }
+
+        70% {
+            transform: translate(730px, 100px) rotate(-20deg);
+        }
+
+        80% {
+            transform: translate(820px, 160px) rotate(25deg);
+        }
+
+        90% {
+            transform: translate(910px, 196px) rotate(10deg);
+        }
+
+        100% {
+            transform: translate(1060px, 210px) rotate(0deg);
+        }
+    }
+</style>
+
+<body>
+    <div class="map-container">
+        <div class="start-point"></div>
+        <div class="end-point"></div>
+        <svg id="road-path" viewBox="0 0 1200 400">
+            <image class="road-image" href="road1.png" x="100" y="0" />
+            <image href="locationMark.png" x="95" y="70" width="30" height="30" />
+            <image href="locationMark.png" x="1075" y="140" width="30" height="30" />
+        </svg>
+        <div id="bike-rider"></div>
+    </div>
+
+    <script>
+        // Detect when the animation ends
+        document.getElementById('bike-rider').addEventListener('animationend', function () {
+            // Display the completion popup
+            if (confirm("Process completed successfully!")) {
+                // Update the rider's status and remove the donation
+                let currentRider = JSON.parse(sessionStorage.getItem('currentRider'));
+                const donation = currentRider.DonateFood;
+
+                currentRider.DonateFood = null;
+                currentRider.available = true;
+                currentRider.inProgress = false;
+
+                // Update riders array in localStorage
+                let riders = JSON.parse(localStorage.getItem('riders')) || [];
+                const riderIndex = riders.findIndex(rider => rider.email === currentRider.email);
+                if (riderIndex !== -1) {
+                    riders[riderIndex] = currentRider;
+                    localStorage.setItem('riders', JSON.stringify(riders));
+                }
+
+                // Update current rider data in sessionStorage
+                sessionStorage.setItem('currentRider', JSON.stringify(currentRider));
+
+                // Remove donation from user's data
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const userIndex = users.findIndex(user => user.username === donation.username);
+                if (userIndex !== -1 && users[userIndex].DonateFood) {
+                    const donationIndex = users[userIndex].DonateFood.findIndex(d => d.message === donation.message);
+                    if (donationIndex !== -1) {
+                        users[userIndex].DonateFood.splice(donationIndex, 1);
+                        localStorage.setItem('users', JSON.stringify(users));
+                    }
+                }
+
+                // Redirect back to the dashboard
+                window.location.href = 'riderDashboard.html';
+            }
+        });
+    </script>
+</body>
+
+</html>

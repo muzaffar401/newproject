@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bike Rider Animation</title>
+</head>
+
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+    }
+
+    .map-container {
+        position: relative;
+        width: 90%;
+        height: 400px;
+        background-color: #c2e59c;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        background-image: url(pngwing.com.png);
+        background-size: cover;
+    }
+
+    .start-point,
+    .end-point {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        text-align: center;
+        color: #fff;
+    }
+
+    .start-point {
+        top: 43px;
+        left: 35px;
+        background-image: url(—Pngtree—small\ restaurant\ building\ vector\ with_5484646.png);
+    }
+
+    .end-point {
+        top: 98px;
+        right: 17px;
+        background-image: url(enterprise.png);
+    }
+
+    #bike-rider {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        background-image: url(—Pngtree—cartoon\ delivery\ man_876933.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+        animation: none;
+        top: -80px;
+    }
+
+    @keyframes ride {
+        0% {
+            transform: translate(100px, 120px) rotate(0deg);
+        }
+
+        10% {
+            transform: translate(170px, 120px) rotate(15deg);
+        }
+
+        20% {
+            transform: translate(280px, 220px) rotate(40deg);
+        }
+
+        30% {
+            transform: translate(370px, 160px) rotate(-20deg);
+        }
+
+        40% {
+            transform: translate(460px, 200px) rotate(20deg);
+        }
+
+        50% {
+            transform: translate(550px, 195px) rotate(10deg);
+        }
+
+        60% {
+            transform: translate(640px, 120px) rotate(-25deg);
+        }
+
+        70% {
+            transform: translate(730px, 100px) rotate(-20deg);
+        }
+
+        80% {
+            transform: translate(820px, 160px) rotate(25deg);
+        }
+
+        90% {
+            transform: translate(910px, 196px) rotate(10deg);
+        }
+
+        100% {
+            transform: translate(1060px, 210px) rotate(0deg);
+        }
+    }
+</style>
+
+<body>
+    <div class="map-container">
+        <div class="start-point"></div>
+        <div class="end-point"></div>
+        <svg id="road-path" viewBox="0 0 1200 400">
+            <image class="road-image" href="road1.png" x="100" y="0" />
+            <image href="locationMark.png" x="95" y="70" width="30" height="30" />
+            <image href="locationMark.png" x="1075" y="140" width="30" height="30" />
+        </svg>
+        <div id="bike-rider"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Retrieve the current rider's status from localStorage
+            let currentRider = JSON.parse(localStorage.getItem('currentRider'));
+
+            if (currentRider && currentRider.inProgress) {
+                // Start the animation
+                document.getElementById('bike-rider').style.animation = 'ride 30s linear forwards';
+
+                document.getElementById('bike-rider').addEventListener('animationend', function () {
+                    // Display the completion popup
+                    if (confirm("Process completed successfully!")) {
+                        // Clear the current donation and update the rider's availability
+                        currentRider.DonateFood = null;
+                        currentRider.available = true;
+                        currentRider.inProgress = false;
+
+                        // Update riders array in localStorage
+                        let riders = JSON.parse(localStorage.getItem('riders')) || [];
+                        const riderIndex = riders.findIndex(rider => rider.email === currentRider.email);
+                        if (riderIndex !== -1) {
+                            riders[riderIndex] = currentRider;
+                            localStorage.setItem('riders', JSON.stringify(riders));
+                        }
+
+                        // Update currentRider data in localStorage
+                        localStorage.setItem('currentRider', JSON.stringify(currentRider));
+
+                        // Clear the riderInProgress.DonateFood from localStorage
+                        let riderInProgress = JSON.parse(localStorage.getItem('riderInProgress'));
+                        if (riderInProgress) {
+                            riderInProgress.DonateFood = null;
+                            riderInProgress.available = true;
+                            riderInProgress.inProgress = false;
+                            localStorage.setItem('riderInProgress', JSON.stringify(riderInProgress));
+                        }
+
+                        // Remove the donation from the user's data
+                        let users = JSON.parse(localStorage.getItem('users')) || [];
+                        const userIndex = users.findIndex(user => user.username === currentRider.DonateFood?.username);
+                        if (userIndex !== -1 && users[userIndex].DonateFood) {
+                            const donationIndex = users[userIndex].DonateFood.findIndex(d => d.message === currentRider.DonateFood?.message);
+                            if (donationIndex !== -1) {
+                                users[userIndex].DonateFood.splice(donationIndex, 1);
+                                localStorage.setItem('users', JSON.stringify(users));
+
+                                // Update currentUser if necessary
+                                let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                                if (currentUser && currentUser.username === users[userIndex].username) {
+                                    // Update the currentUser.DonateFood in localStorage
+                                    currentUser.DonateFood = users[userIndex].DonateFood;
+                                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                                }
+                            }
+                        }
+
+                        // Redirect back to the dashboard
+                        window.location.href = 'riderDashboard.html';
+                    }
+
+                    // Optionally, clear the rider from the map or reset the animation
+                    document.getElementById('bike-rider').style.animation = 'none';
+                });
+            } else {
+                alert('No active delivery process.');
+            }
+        });
+    </script>
+</body>
+
+</html>
